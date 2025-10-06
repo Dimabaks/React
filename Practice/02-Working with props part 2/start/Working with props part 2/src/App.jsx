@@ -56,7 +56,8 @@ const cardData = [
   },
   {
     title: "Mindbox",
-    description: "Поддерживаем редизайн платформы автоматизированного маркетинга",
+    description:
+      "Поддерживаем редизайн платформы автоматизированного маркетинга",
     date: "21 сентября 2022",
     imageUrl: "/img-6.jpeg",
     tags: ["#маркетинг", "#редизайн", "#автоматизация"],
@@ -67,36 +68,35 @@ const cardData = [
 export default function CardContainer() {
   return (
     <div className="card-container">
-      <Card
-        title="Мокка"
-        description="Развиваем финтех-продукт для международного рынка"
-        date="24 апреля 2024"
-        tags={["#финтех", "#международный", "#рынок"]}
-        img="/img-1.jpeg"
-        archived={false}
-      />{" "}
+      {cardData.map((card) => (
+        <Card cardObj={card} key={card.title} />
+      ))}
     </div>
   );
 }
 
-function Card(props) {
+function Card({ cardObj }) {
+  if (cardObj.archived) return null;
+  console.log(cardObj);
+  console.log(cardObj.tags);
   return (
     <div className="card">
-      <img className="card-image" src={props.img}></img>
+      <img className="card-image" src={cardObj.imageUrl}></img>
       <div className="card-content">
-        <h2 className="card-title"> {props.title}</h2>
-        <p className="card-description">{props.description}</p>
-        <p className="card-date">{props.date}</p>
+        <h2 className="card-title"> {cardObj.title}</h2>
+        <p className="card-description">{cardObj.description}</p>
+        <p className="card-date">{cardObj.date}</p>
         <div className="card-tags">
-          <CardTag tag="#финтех" />
-          <CardTag tag="#международный" />
-          <CardTag tag="#рынок" />
+          {cardObj.tags.map((tag) => (
+            <CardTag cardTag={tag} key={tag} />
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-function CardTag(props) {
-  return <span className="card-tag">{props.tag}</span>;
+function CardTag({ cardTag }) {
+  console.log(cardTag);
+  return <span className="card-tag">{cardTag}</span>;
 }
