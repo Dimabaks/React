@@ -1,29 +1,58 @@
+import { useState } from "react";
+
 function App() {
+  const [count, setCount] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+
+  function toggleIsOpen() {
+    setIsOpen((prev) => !prev);
+  }
   return (
     <>
-      {/* <span className="cross">&times;</span> */}
-      {/* <button>Начать</button> */}
+      {isOpen ? (
+        <span className="cross" onClick={toggleIsOpen}>
+          &times;
+        </span>
+      ) : (
+        <button onClick={toggleIsOpen}>Начать</button>
+      )}
 
-      <h1>Vite + React = Love</h1>
+      {isOpen && (
+        <>
+          <h1>Vite + React = {count >= 3 ? "Love" : ""}</h1>
 
-      {/* <div className="logo-container">
-        <img src="/vite.svg" className="logo" alt="Vite logo" />
-        <p>+</p>
-        <img src="/react.svg" className="logo" alt="React logo" />
-        <p>=</p>
-        <img src="/love.svg" className="logo" alt="Love logo" />
-      </div> */}
+          <div className="logo-container">
+            <img
+              src="/vite.svg"
+              className={`logo ${count >= 1 ? "active" : ""}`}
+              alt="Vite logo"
+            />
+            <p>+</p>
+            <img
+              src="/react.svg"
+              className={`logo ${count >= 2 ? "active" : ""}`}
+              alt="React logo"
+            />
+            <p>=</p>
+            <img
+              src="/love.svg"
+              className={`logo ${count >= 3 ? "active" : ""}`}
+              alt="Love logo"
+            />
+          </div>
 
-      <hr />
+          <hr />
 
-      <div className="card">
-        <p className="count-paragraph">count is 0</p>
-        <div className="increment-buttons">
-          <button>+1</button>
-          <button>-1</button>
-          <button>Reset</button>
-        </div>
-      </div>
+          <div className="card">
+            <p className="count-paragraph">count is {count}</p>
+            <div className="increment-buttons">
+              <button onClick={() => setCount((prev) => prev + 1)}>+1</button>
+              <button onClick={() => setCount((prev) => prev - 1)}>-1</button>
+              <button onClick={() => setCount(0)}>Reset</button>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
