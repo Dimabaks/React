@@ -26,39 +26,82 @@ import "./index.css";
 // Use this method for all operations in the calculator.
 
 function Calculator() {
+  const [input, setInput] = useState("0");
+
+  function increment() {
+    const currentInput = eval(input);
+    console.log(currentInput);
+    setInput(currentInput + 1);
+  }
+
+  function decrement() {
+    const currentInput = eval(input);
+    console.log(currentInput);
+    setInput(currentInput - 1);
+  }
+
+  function handleClick(value) {
+    if (value === "C") {
+      setInput("0");
+      return;
+    } else if (value === "=") {
+      setInput(eval(input).toString());
+      console.log(input);
+      return;
+    } else {
+      setInput((prev) => (prev === "0" ? value : prev + value));
+    }
+  }
+
   return (
     <div className="calculator-container">
       <h1 className="calculator-title">UseState Calculator</h1>
       <div className="calculator">
-        <div className="display">0</div>
+        <div className="display">{input}</div>
         <div className="increment-buttons">
-          <button className="increment">+1</button>
-          <button className="decrement">-1</button>
+          <button className="increment" onClick={increment}>
+            +1
+          </button>
+          <button className="decrement" onClick={decrement}>
+            -1
+          </button>
         </div>
         <div className="buttons">
-          <button>1</button>
-          <button>2</button>
-          <button>3</button>
-          <button className="operator">+</button>
-          <button>4</button>
-          <button>5</button>
-          <button>6</button>
-          <button className="operator">-</button>
-          <button>7</button>
-          <button>8</button>
-          <button>9</button>
-          <button className="operator">×</button>
-          <button>0</button>
-          <button>,</button>
-          <button className="equals">=</button>
-          <button className="operator">÷</button>
-          <button className="clear">C</button>
+          <button onClick={() => handleClick("1")}>1</button>
+          <button onClick={() => handleClick("2")}>2</button>
+          <button onClick={() => handleClick("3")}>3</button>
+          <button className="operator" onClick={() => handleClick("+")}>
+            +
+          </button>
+          <button onClick={() => handleClick("4")}>4</button>
+          <button onClick={() => handleClick("5")}>5</button>
+          <button onClick={() => handleClick("6")}>6</button>
+          <button className="operator" onClick={() => handleClick("-")}>
+            -
+          </button>
+          <button onClick={() => handleClick("7")}>7</button>
+          <button onClick={() => handleClick("8")}>8</button>
+          <button onClick={() => handleClick("9")}>9</button>
+          <button className="operator" onClick={() => handleClick("*")}>
+            ×
+          </button>
+          <button onClick={() => handleClick("0")}>0</button>
+          <button onClick={() => handleClick(".")}>,</button>
+          <button className="equals" onClick={() => handleClick("=")}>
+            =
+          </button>
+          <button className="operator" onClick={() => handleClick("/")}>
+            ÷
+          </button>
+          <button className="clear" onClick={() => handleClick("C")}>
+            C
+          </button>
         </div>
       </div>
       <div className="technologies-used">
         <p>
-          <strong>Technologies used:</strong> React, JSX, CSS Modules, JavaScript (useState, events
-          handling)
+          <strong>Technologies used:</strong> React, JSX, CSS Modules,
+          JavaScript (useState, events handling)
         </p>
       </div>
     </div>
