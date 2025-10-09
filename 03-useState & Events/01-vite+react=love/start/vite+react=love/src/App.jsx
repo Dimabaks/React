@@ -3,10 +3,20 @@ import { useState } from "react";
 function App() {
   const [count, setCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [activeItem, setActiveItem] = useState(null);
 
   function toggleIsOpen() {
     setIsOpen((prev) => !prev);
   }
+
+  function handleMouseEnter(item) {
+    setActiveItem(item);
+  }
+
+  function handleMouseLeave() {
+    setActiveItem(null);
+  }
+
   return (
     <>
       {isOpen ? (
@@ -23,20 +33,32 @@ function App() {
 
           <div className="logo-container">
             <img
+              onMouseEnter={() => handleMouseEnter("vite")}
+              onMouseLeave={handleMouseLeave}
               src="/vite.svg"
-              className={`logo ${count >= 1 ? "active" : ""}`}
+              className={`logo ${
+                count >= 1 || activeItem === "vite" ? "active" : ""
+              }`}
               alt="Vite logo"
             />
             <p>+</p>
             <img
+              onMouseEnter={() => handleMouseEnter("react")}
+              onMouseLeave={handleMouseLeave}
               src="/react.svg"
-              className={`logo ${count >= 2 ? "active" : ""}`}
+              className={`logo ${
+                count >= 2 || activeItem === "react" ? "active" : ""
+              }`}
               alt="React logo"
             />
             <p>=</p>
             <img
+              onMouseEnter={() => handleMouseEnter("love")}
+              onMouseLeave={handleMouseLeave}
               src="/love.svg"
-              className={`logo ${count >= 3 ? "active" : ""}`}
+              className={`logo ${
+                count >= 3 || activeItem === "love" ? "active" : ""
+              }`}
               alt="Love logo"
             />
           </div>
