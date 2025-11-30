@@ -4,42 +4,68 @@ import "./index.css";
 const KEY = "6c251eec568a46dea19173345252610";
 
 function App() {
-  const [city, setCity] = useState("Chisinau");
+  const [city, setCity] = useState("");
   const [weatherData, setWeatherData] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [coords, setCoords] = useState(null);
 
   useEffect(() => {
+    if(!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition((position) => {
+      const {latitude, longitude} = position.coords;
+      setCoords({latitude,longitude});
+    }, 
+    (err) => {
+      console.error('Geolocation error', err.message)
+      setError('Failed to get your location');
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!city .trim() && !coords) {
+      setWeatherData(null);
+      setError(null);
+      return;
+    }
     async function getData() {
+      setLoading(true);
       try {
-      const res = await fetch(`http://api.weatherapi.com/v1/current.json?key=${KEY}&q=${city}`);
-
-      if (!res.ok) {
-        throw new Error(`Not valid city name ${res.status} ${res.statusText}`)
-      }
-
+        const query = city.trim() ? city : `${coords.latitude}, ${coords.longitude}`
+      const res = await fetch(`http://api.weatherapi.com/v1/current.json?key=${KEY}&q=${query}`);
       const data = await res.json();
-      console.log(data);
+      if (data.error) {
+        setError(data.error.message);
+        setWeatherData(null);
+        return;
+      }
       setWeatherData(data);
-      } catch(err) {
-        console.log(err)
-        setError(err.message);
+      setError(null);
+      } catch {
+        setError('Failed to fetch weather data')
+        setWeatherData(null)
+      } finally {
+        setLoading(false);
       }
     }
     getData();
-  }, [])
+  }, [city, coords])
 
+  function renderLoading() {
+    return <p>Loading...</p>
+  }
 
-  return (
-    <div className="app">
-      <div className="widget-container">
-        <div className="weather-card-container">
-          <h1 className="app-title">{error}Weather Widget</h1>
-          <div className="search-container">
-            <input type="text" placeholder="Enter city name" className="search-input" />
-          </div>
-        </div>
-        <div className="weather-card">
-          <h2>{`${weatherData?.location?.name}, ${weatherData?.location?.country}`}</h2>
+  function renderError() {
+    return <p>{error}</p>
+  }
+
+  function renderWeatherData() {
+    return (
+      <div className="weather-card">
+          <h2>{`${weatherData.location.name}, ${weatherData.location.country}`}</h2>
           <img src={weatherData?.current.condition.icon} alt="icon" className="weather-icon" />
           <p className="temperature">{Math.round(weatherData?.current.temp_c)}C</p>
           <p className="condition">{weatherData?.current.condition.text}</p>
@@ -48,6 +74,21 @@ function App() {
             <p>Wind: {weatherData?.current.wind_kph} km/h</p>
           </div>
         </div>
+    )
+  }
+
+  return (
+    <div className="app">
+      <div className="widget-container">
+        <div className="weather-card-container">
+          <h1 className="app-title">Weather Widget</h1>
+          <div className="search-container">
+            <input type="text" value={city} placeholder="Enter city name" className="search-input" onChange={(e) => setCity(e.target.value)}/>
+          </div>
+        </div>
+        {error && renderError()}
+        {loading && renderLoading()}
+        {!error && !loading && weatherData && renderWeatherData()}
       </div>
     </div>
   );
