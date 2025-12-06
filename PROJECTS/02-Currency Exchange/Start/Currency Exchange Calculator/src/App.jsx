@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import "./index.css";
 
 //Rus
@@ -41,27 +41,70 @@ import "./index.css";
 const API_URL = "https://api.frankfurter.app/";
 
 function App() {
+  const [currencies, setCurrencies] = useState([]);
+  const [fromCurrency, setFromCurrency] = useState("EUR");
+  const [toCurrency, setToCurrency] = useState("USD");
+  const [amount, setAmount] = useState(1);
+  const [convertedAmount, setConvertedAmount] = useState(null)
+  const [error, setError] = useState(null)
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function getCurrencies(){
+      try{
+        const res = await fetch(`${API_URL}latest`)
+        const data = await res.json();
+        setCurrencies(Object.keys(data.rates))
+      } catch{
+        setError("Failed to fetch curriences")
+      }     
+    } 
+    getCurrencies();
+    
+  },[])
+
+
+  async function handleConvert() {
+    if(!amount || amount <= 0) {
+      setError('Amount must be more than 0')
+      return;
+    }
+    setError(null);
+    setIsLoading(true);
+    try{
+      const res = await fetch(`${API_URL}latest?amount=${amount}&from=${fromCurrency}&to=${toCurrency}`);
+      const data = await res.json();
+      console.log(data);
+      setConvertedAmount(data.rates[toCurrency]);
+    } catch {
+      setError("Failed to convert curriences")
+    } finally {
+      setIsLoading(false);
+    }
+    
+  }
+
   return (
     <div className="app">
       <h1>Currency Exchange Calculator</h1>
 
       <div className="converter-container">
-        <p className="error"></p>
+        {error && <p className="error">{error}</p>}
 
         <div className="input-group">
-          <input type="number" placeholder="Amount" className="input-field" />
-          <select className="dropdown">
-            <option></option>
+          <input value={amount} type="number" placeholder="Amount" className="input-field" onChange={(e) => setAmount(e.target.value)}/>
+          <select value={fromCurrency} className="dropdown" onChange={(e) => {setFromCurrency(e.target.value)}}>
+            {currencies.map(item => <option key={item}value={item}>{item}</option>)}
           </select>
           <span className="arrow">→</span>
-          <select className="dropdown">
-            <option></option>
+          <select value={toCurrency} className="dropdown" onChange={(e) => {setToCurrency(e.target.value)}}>
+            {currencies.map(item => <option key={item}value={item}>{item}</option>)}
           </select>
         </div>
-        <button className="convert-button">Convert</button>
-        <p className="loading">Converting...</p>
+        <button className="convert-button" onClick={handleConvert}>Convert</button>
+        {isLoading && <p className="loading">Converting...</p>}
 
-        <p className="result"></p>
+        {convertedAmount !== null && !isLoading && <p className="result">{amount}{fromCurrency} = {convertedAmount.toFixed(2)}{toCurrency}</p>}
       </div>
     </div>
   );
